@@ -5,11 +5,12 @@ public class Game {
     private final char[][] board; // 2D array for creating a board to play
     private final Scanner sc = new Scanner(System.in);
     private String user1;
+    private String user2;
     private final Map<Integer,Boolean> visitedBoxes = new HashMap<>();
     private boolean draw = false;
-
+    private int gameMode=0;
     private char winner;
-
+    
     public Game() {
         this.board = new char[3][3];
         for (int i=0;i<3;++i){
@@ -173,11 +174,117 @@ public class Game {
         System.out.println("------------------------------------------------");
 
     }
-
-    public void playMultiPlayer(){
-        System.out.print("Please enter your name : ");
+    
+    public void displayMultiPlayerModeDetails()
+    {
+    	System.out.print("Please enter first player's name : ");
         user1 = sc.next();
-        System.out.println("Starting game between "+user1+" and CPU");
+        System.out.println("Please enter second player's name : ");
+        user2=sc.next();
+        displayMultiPlayerRules();
+        System.out.println("------------------------------------------------");
+        System.out.println("Starting game between "+user1+" and "+user2);
+        System.out.println("            All the best !!    ");
+        System.out.println("------------------------------------------------");
+    }
+    public void displayMultiPlayerRules() {
+    	System.out.println("------------------------------------------------");
+        System.out.println("    Rules For Multi Player Mode:");
+        System.out.println("------------------------------------------------");
+        System.out.println("1. The game is played on a grid that's 3 squares by 3 squares. Initially all the boxes are empty");
+        System.out.println();
+        displayBoard();
+        System.out.println();
+        System.out.println("2. player1 is X, and player2 is O. Players take turns putting their marks only in empty squares.");
+        System.out.println("3. To put your mark on any empty box simply enter the box number. For example, to put your mark at the top right corner box, just enter 3");
+        System.out.println();
+        displayBoxWithNumbers();
+        System.out.println();
+        System.out.println("4. The first player to get 3 of her marks in a row (up, down, across, or diagonally) is the winner.");
+        System.out.println("5. When all 9 squares are full, the game is over. If no player has 3 marks in a row, the game ends in a tie.");
+        System.out.println();
+    }
+    public void startMultiPlayerGame(){
+    	System.out.println("----------------------------------------------------------------------------");
+        System.out.print("  Get ready for the toss  ");
+        try {
+            for(int i=0;i<5;i++){
+                System.out.print(".");
+                Thread.sleep(400);
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println();
+        System.out.println("----------------------------------------------------------------------------");
+
+        System.out.println();
+        System.out.println();
+        int max = 1,min = 0;
+        int turn = (int) (Math.random()*(max-min+1)+min);
+        if (turn==0){
+            System.out.println("----------------------------------------------------------------------------");
+            System.out.println("    Congratulations!! player1 won the toss. player1 will start the game now");
+            System.out.println("----------------------------------------------------------------------------");
+        }
+        else {
+            System.out.println("----------------------------------------------------------------------------");
+            System.out.println("    Congratulations!! player2 won the toss. player2 will start the game now");
+            System.out.println("----------------------------------------------------------------------------");
+        }
+        System.out.println();
+        while (true){
+            try {
+                Thread.sleep(800);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            displayBoard();
+            System.out.println();
+            if (turn%2==0){
+                // player1 (x)
+                do {
+                    System.out.println("------------------------------------");
+                    System.out.print("     "+user1+"'s turn : ");
+                    int markAt = sc.nextInt();
+                    System.out.println("------------------------------------");
+                   if (visitedBoxes.containsKey(markAt) && !visitedBoxes.get(markAt)){
+                       visitedBoxes.put(markAt,true);
+                       markBoxAt(markAt,'x');
+                       break;
+                   }
+                }
+                while (true);
+
+            }
+            else {
+                // player2 (o)
+            	do {
+                    System.out.println("------------------------------------");
+                    System.out.print("     "+user2+"'s turn : ");
+                    int markAt = sc.nextInt();
+                    System.out.println("------------------------------------");
+                   if (visitedBoxes.containsKey(markAt) && !visitedBoxes.get(markAt)){
+                       visitedBoxes.put(markAt,true);
+                       markBoxAt(markAt,'o');
+                       break;
+                   }
+                }
+                while (true);
+            }
+            Map<String,Character> gameDetail = isGameCompleted();
+            if (gameDetail.get("gameover")=='y') {
+                if (gameDetail.get("winner")=='d'){
+                    draw=true;
+                }
+                else {
+                    winner = gameDetail.get("winner");
+                }
+                displayBoard();
+                break;
+            }
+            turn++;
+        }
     }
 
     public void markBoxAt(int mark,char c){
@@ -278,20 +385,38 @@ public class Game {
     }
 
     public void declareWinner(){
-        System.out.println("\n\n");
-        System.out.println("----------------------------------------------------------------");
-        if (draw){
-            System.out.println("    ******  Match draw  ******  ");
-        }
-        else {
-            if (winner=='x'){
-                System.out.println("    *****   Congrats "+user1+"! You won the Tic Tac Toe game    *****    ");
+        if(gameMode==1){
+        	System.out.println("\n\n");
+            System.out.println("----------------------------------------------------------------");
+            if (draw){
+                System.out.println("    ******  Match draw  ******  ");
             }
             else {
-                System.out.println("    *****   CPU won the Tic Tac Toe game    *****    ");
+                if (winner=='x'){
+                    System.out.println("    *****   Congrats "+user1+"! You won the Tic Tac Toe game    *****    ");
+                }
+                else {
+                    System.out.println("    *****   CPU won the Tic Tac Toe game    *****    ");
+                }
             }
+            System.out.println("----------------------------------------------------------------\n\n");
         }
-        System.out.println("----------------------------------------------------------------\n\n");
+        else if(gameMode==2){
+        	System.out.println("\n\n");
+            System.out.println("----------------------------------------------------------------");
+            if (draw){
+                System.out.println("    ******  Match draw  ******  ");
+            }
+            else {
+                if (winner=='x'){
+                    System.out.println("    *****   Congrats "+user1+"! You won the Tic Tac Toe game    *****    ");
+                }
+                else {
+                    System.out.println("    *****   Congrats "+user2+"! You won the Tic Tac Toe game    *****    ");
+                }
+            }
+            System.out.println("----------------------------------------------------------------\n\n");
+        }
     }
 
     public void resetBoard(){
@@ -319,13 +444,18 @@ public class Game {
         while (choice!=3){
             switch (choice) {
                 case 1 -> {
+                	gameMode=1;
                     displaySinglePlayerModeDetails();
                     Thread.sleep(3500);
                     startSinglePlayerGame();
                     declareWinner();
                 }
                 case 2 -> {
-
+                	gameMode=2;
+                	displayMultiPlayerModeDetails();
+                	Thread.sleep(3500);
+                	startMultiPlayerGame();
+                	declareWinner();
                 }
                 default -> System.out.println("Enter a valid game mode");
             }
