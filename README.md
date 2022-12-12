@@ -2,5 +2,5 @@
 
 # Tasks
 - [x] Single Player
-- [ ] Multi Player
+- [x] Multi Player
 - [ ] Advance Level Single Player
